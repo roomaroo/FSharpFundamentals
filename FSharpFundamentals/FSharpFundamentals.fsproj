@@ -58,13 +58,11 @@
     <Compile Include="Program.fs" />
     <None Include="App.config" />
     <Compile Include="Quicksort.fs" />
-    <Compile Include="TwoNumbers.fs" />
     <None Include="functions.fsx" />
     <Content Include="packages.config" />
     <None Include="pipe_forward.fsx" />
-    <None Include="signal_generator.fsx" />
-    <None Include="wave_packer.fsx" />
-    <None Include="Core.String.fsx" />
+    <None Include="RingtoneGenerator\signal_generator.fsx" />
+    <None Include="RingtoneGenerator\wave_packer.fsx" />
     <None Include="ComposeParsing.fsx" />
   </ItemGroup>
   <ItemGroup>

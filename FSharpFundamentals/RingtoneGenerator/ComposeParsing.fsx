@@ -1,5 +1,5 @@
-﻿#r @"..\packages\FParsec.1.0.2\lib\net40-client\FParsecCS.dll"
-#r @"..\packages\FParsec.1.0.2\lib\net40-client\FParsec.dll"
+﻿#r @"..\..\packages\FParsec.1.0.2\lib\net40-client\FParsecCS.dll"
+#r @"..\..\packages\FParsec.1.0.2\lib\net40-client\FParsec.dll"
 
 open FParsec
 
@@ -73,3 +73,6 @@ let ptoken = pipe2 plength (prest <|> ptone) (fun l t -> {length = l; sound = t}
 let pscore = sepBy ptoken (pstring " ")
 
 test ptoken aspiration
+
+let takeonme = "8- 16#a1 16#a1 16#a1 8#f1 8#d1 8#g1 8#g1 16#g1 16c2 16c2 16#c2 16#d2 16#c2 16#c2 16#c2 8#g1 8#f1 8#a1 8#a1 16#a1 16#g1 16#g1 16#a1 16#g1 16#a1 16#a1 16#a1 8#f1 8#d1 8#g1 8#g1 16#g1 16c2 16c2 16#c2 16#d2 16#c2 16#c2 16#c2 8#g1 8#f1 8#a1 8#a1"
+test pscore takeonme
