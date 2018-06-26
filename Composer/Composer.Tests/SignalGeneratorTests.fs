@@ -1,4 +1,5 @@
-﻿module SignalGeneratorTests
+﻿
+module SignalGeneratorTests
 
 open NUnit.Framework
 open SignalGenerator
@@ -16,4 +17,9 @@ type ``When generating 2 seconds at 440 Hz`` ()=
         let sixteenBitSampleLimit = 32767s
         let samples = generateSamples 2000. 440.
         samples |> Seq.iter (fun s -> Assert.IsTrue(s > (-1s * sixteenBitSampleLimit) & s < sixteenBitSampleLimit))
+    
+    [<Test>]
+    member this.``the samples should all be 0`` ()=
+        let samples = generateSamples 2000. 0.
+        Assert.AreEqual(Seq.init 88200 (fun i -> int16 0), samples)
 

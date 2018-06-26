@@ -2,19 +2,12 @@
 
 open FParsec
 
-let test p str =
-    match run p str with
-    | Success(result, _, _) -> printfn "Success %A" result
-    | Failure(errorMsg, _, _) -> printfn "Failure %A" errorMsg
-
-type MeasureFraction = Half | Quarter | Eighth | Sixteenth | ThirtySecondth
+type MeasureFraction = Full | Half | Quarter | Eighth | Sixteenth | ThirtySecondth
 type Length = { fraction: MeasureFraction; extended: bool }
 type Note = A | ASharp | B | C | CSharp | D | DSharp | E | F | FSharp | G | GSharp
 type Octave = One | Two | Three
 type Sound = Rest | Tone of note: Note * octave: Octave
 type Token = { length: Length; sound: Sound }
-
-let aspiration = "32.#d3"
 
 let pmeasurefraction = 
     (stringReturn "2" Half)
@@ -22,6 +15,7 @@ let pmeasurefraction =
     <|> (stringReturn "8" Eighth)
     <|> (stringReturn "16" Sixteenth)
     <|> (stringReturn "32" ThirtySecondth)
+    <|> (stringReturn "1" Full)
 
 let pextendedparser = (stringReturn "." true) <|> (stringReturn "" false)
 
@@ -62,8 +56,6 @@ let poctave = anyOf "123" |>> (function
                     | '3' -> Three
                     | unknown -> sprintf "Unknown octave %c" unknown |> failwith)
 
-test poctave "2"
-
 let ptone = pipe2 pnote poctave (fun n o -> Tone(note = n, octave = o))
 let prest = stringReturn "-" Rest
 
@@ -71,7 +63,39 @@ let ptoken = pipe2 plength (prest <|> ptone) (fun l t -> {length = l; sound = t}
 
 let pscore = sepBy ptoken (pstring " ")
 
-test ptoken aspiration
+let parse score =
+    match run pscore score with
+        | Success(result, _, _)   -> Choice2Of2 result
+        | Failure(errorMsg, _, _) -> Choice1Of2 errorMsg
 
-let takeonme = "8- 16#a1 16#a1 16#a1 8#f1 8#d1 8#g1 8#g1 16#g1 16c2 16c2 16#c2 16#d2 16#c2 16#c2 16#c2 8#g1 8#f1 8#a1 8#a1 16#a1 16#g1 16#g1 16#a1 16#g1 16#a1 16#a1 16#a1 8#f1 8#d1 8#g1 8#g1 16#g1 16c2 16c2 16#c2 16#d2 16#c2 16#c2 16#c2 8#g1 8#f1 8#a1 8#a1"
-test pscore takeonme
+let durationFromToken token =
+    let bpm = 120.
+    let secondsPerBeat = 60./bpm
+    (match (token.length.fraction) with
+    | Full -> 4. * 1000. * secondsPerBeat
+    | Half -> 2. * 1000. * secondsPerBeat
+    | Quarter -> 1. * 1000. * secondsPerBeat
+    | Eighth -> 1./2. * 1000. * secondsPerBeat
+    | Sixteenth -> 1./4. * 1000. * secondsPerBeat   
+    | ThirtySecondth -> 1./8. * 1000. * secondsPerBeat) *
+    (if token.length.extended then 1.5 else 1.0)
+
+let octaveNumeric = function 
+    | One -> 1
+    | Two -> 2
+    | Three -> 3
+
+let semitonesBetween lower upper = 
+    let noteSequence = [A;ASharp;B;C;CSharp;D;DSharp;E;F;FSharp;G;GSharp]
+    let overallIndex (note,octave) = 
+        let noteIndex = List.findIndex (fun n -> n = note) noteSequence
+        noteIndex + ((octaveNumeric octave - 1) * 12)
+    (overallIndex upper) - (overallIndex lower)
+    
+
+let frequency {sound=sound} = 
+    match sound with 
+    | Rest -> 0.
+    | Tone (note, octave) -> 
+        let gap = semitonesBetween (A, One) (note, octave)
+        220. * (2. ** 1./12.) ** (float gap)

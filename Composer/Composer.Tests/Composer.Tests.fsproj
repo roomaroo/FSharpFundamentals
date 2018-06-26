@@ -13,7 +13,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="AssemblerTests.fs" />
+    <Compile Include="ParsingTests.fs" />
     <Compile Include="SignalGeneratorTests.fs" />
+    <Compile Include="WavePackerTests.fs" />
   </ItemGroup>
 
   <ItemGroup>
