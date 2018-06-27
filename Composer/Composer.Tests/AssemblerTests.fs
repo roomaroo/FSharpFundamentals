@@ -20,3 +20,9 @@ type ``when assembling a composition`` ()=
         let expectedSamples = 6. * 44100. |> int
         Assert.AreEqual(expectedSamples, Seq.length samples)
 
+    [<Test>]
+    member this.``single note should have the correct length`` ()=
+        let score = parse "2a1" |> extractChoice2
+        let samples = assemble score 
+        let expectedSamples = 1. * 44100. |> int
+        Assert.AreEqual(expectedSamples, Seq.length samples)

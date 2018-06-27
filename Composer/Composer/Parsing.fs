@@ -98,4 +98,4 @@ let frequency {sound=sound} =
     | Rest -> 0.
     | Tone (note, octave) -> 
         let gap = semitonesBetween (A, One) (note, octave)
-        220. * (2. ** 1./12.) ** (float gap)
+        220. * ((2. ** (1./12.)) ** (float gap))

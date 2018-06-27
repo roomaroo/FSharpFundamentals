@@ -74,3 +74,18 @@ type ``When calculating the duration of a note`` ()=
            length={fraction = ThirtySecondth; extended = true}; 
            sound=Tone (DSharp,Three)})
 
+
+[<TestFixture>]
+type ``when calculating the pitch of a note`` ()=
+    
+    [<Test>]
+    member this.``A1 should be 220 hz`` ()=
+        let sound = {length={fraction = Full; extended = false}; sound = Tone(A, One)}
+        let pitch = frequency sound
+        Assert.AreEqual(220., pitch, 0.0001)
+
+    [<Test>]
+    member this.``A2 should be 440 hz`` ()=
+        let sound = {length={fraction = Full; extended = false}; sound = Tone(A, Two)}
+        let pitch = frequency sound
+        Assert.AreEqual(440., pitch, 0.0001)
